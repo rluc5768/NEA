@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 async function loginUser(userDetails){
     return fetch("http://localhost:8000/api/v1/login/", {
     method: "POST",
@@ -8,10 +9,11 @@ async function loginUser(userDetails){
     body: JSON.stringify(userDetails),
   }).then((data) => data.json());
 }
-function Login() {
+function Login({ setToken }) {
     const [username, setUsername] = useState();
     const [password, setPassword] = useState();
-
+    const navigate = useNavigate();
+    
     const HandleSubmit = async (event) => {
         event.preventDefault();//Prevents the default form action for Ajax form submissions.
         const token = await loginUser({
@@ -19,7 +21,12 @@ function Login() {
             password,
         });
         console.log("token: "+JSON.stringify(token));
-
+        
+        if("token" in token){
+            setToken(token);
+            navigate('/home')
+        }
+        
     }
     return (
         <>
