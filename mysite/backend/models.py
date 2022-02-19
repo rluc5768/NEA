@@ -4,13 +4,14 @@ from django.utils.translation import gettext_lazy as _
 import re
 import hashlib
 # Create your models here.
+
+
 class User(models.Model):
     username = models.CharField(primary_key=True, max_length=50)
     email = models.CharField(null=False, max_length=320)
     fname = models.CharField(null=False, max_length=35)
     sname = models.CharField(null=False, max_length=35)
     hashedPassword = models.CharField(null=False, max_length=64)
-    # check if the database actual limit is 64 as well to stop error.
     uniqueSalt = models.BinaryField(max_length=32)
     stravaAuthorised = models.BooleanField(default=False)
     stravaAccessToken = models.CharField(default='', max_length=40)

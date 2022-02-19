@@ -81,18 +81,19 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-'''
+
 DATABASES = {
-    'default':{
-        'ENGINE':'django.db.backends.postgresql_psycopg2',
-        'NAME':'fitnesstracker',
-        'USER':'postgres',
-        'PASSWORD':config('DB_HOST_PWD'),#will store in a configuration file.
-        'HOST':config('DB_HOST_IP'),
-        'PORT':'5432',
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'fitnesstracker',
+        'USER': 'postgres',
+        # will store in a configuration file.
+        'PASSWORD': config('DB_HOST_PWD'),
+        'HOST': config('DB_HOST_IP'),
+        'PORT': '5432',
     }
 }
-'''
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
