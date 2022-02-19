@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 import re
 import hashlib
+from .validation import *
 # Create your models here.
 
 
@@ -23,6 +24,7 @@ class User(models.Model):
         '''String represents the model object'''
         return self.username
 
+    '''
     def validatePassword(self):
         # No upper limit as password will be hashed.
         if(len(self.hashedPassword) < 5):
@@ -45,6 +47,7 @@ class User(models.Model):
         if NoSpecialCharacter or NoNumber or NoUppercase or NoLowercase:
             return False
         return True
+   '''
 
     def hashPassword(self):
         encoded = self.hashedPassword.encode('utf-8')
@@ -77,7 +80,7 @@ class User(models.Model):
             errors.append(ValidationError(
                 _('Username already in use.'), code="UsernameAlreadyExists"))
         # Validate Password
-        if self.validatePassword():
+        if validatePassword(self.hashedPassword):
             self.hashedPassword = self.hashPassword()
             print("hashed password {}".format(self.hashedPassword))
         else:
