@@ -110,7 +110,8 @@ class Login(APIView):
         # print(request.data)
 
 
+# Boolean return based on if the JWT sent is valid.
 class AuthoriseUserView(APIView):
-    def post(self, request):  # Here we authenticate the user.
+    def post(self, request):  # Here we authenticate the user (JWT).
         print(request.data)
         return Response(False)
