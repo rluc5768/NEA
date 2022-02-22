@@ -4,13 +4,13 @@ from rest_framework.response import Response
 import jwt
 import time
 from decouple import config
-from .forms import *
 import json
 import os
 from .validation import *
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 import hashlib
+from .models import *
 # Create your views here.
 
 
@@ -114,4 +114,17 @@ class Login(APIView):
 class AuthoriseUserView(APIView):
     def post(self, request):  # Here we authenticate the user (JWT).
         print(request.data)
+        jwt_token = request.data
+        dotCounter = 0
+        for c in jwt_token:
+            if c == '.':
+                dotCounter += 1
+        if dotCounter != 2:  # token must contain 2 dots to split the string into 3 sections: header, payload, signature
+            return Response(False)
+        # ======================= HEADER will be checked for my implementation ========================
+        # =============================================================================================
+        payload = jwt.decode(jwt_token, config(
+            'AUTH_SECRET'), algorithms=["HS256"])
+        print(payload)
+
         return Response(False)

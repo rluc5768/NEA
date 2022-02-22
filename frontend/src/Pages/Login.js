@@ -23,7 +23,6 @@ function Login({ setToken }) {
     console.log("token" in response);
     if ("token" in response) {
       setToken(response["token"]);
-      //navigate("/home");
     }
     //====================== Do something with errors HERE ==========================
   };
