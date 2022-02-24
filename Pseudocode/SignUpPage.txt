@@ -1,0 +1,75 @@
+VI = ValidateInputs();
+HandleSubmit(){
+	errors = VI.allInputs("signUp");     //Does basic validation on the data entered into the form before it is sent to "/User" endpoint. Returns an array filled with the errors of the input fields (empty if all inputs are valid).
+	if (errors.length == 0) THEN
+		try{
+			POST form data to "/User" and wait for response. (will receive json in form "email":true, "username":false, etc)
+			r = response converted to array of key Value Pairs
+			if (r.length == 0) THEN
+				Save the response to session storage with key "token"
+			END IF
+			ELSE
+				ChangeInputState(r);
+			END ELSE
+			
+		}
+		catch exception e{
+			Display "something has gone wrong"
+		}
+		
+	END IF
+	ELSE
+		ChangeInputState(errors);
+	END ELSE
+}
+ChangeInputState(errors: string[]) : void
+{
+	for(i ← 0; i < errors.length; i++){
+		switch(errors[i]){
+			case "firstNameInvalid":
+				firstNameValid ← false
+				break;
+			case "surnameInvalid":
+				surnameValid ← false
+				break;
+			case "emailInvalid":
+				emailValid ← false
+				break;
+			case "UsernameInvalid":
+				usernameValid ← false
+				break;
+			case "passwordInvalid":
+				passwordValid ← false
+				break;
+		}
+	}
+}
+return(
+
+<div>
+	<form id="signUpForm" onSubmit={HandleSubmit}>    //The handleSubmit function is called when the form is submitted.
+		<input type="text" id="firstNameInput" onChange={
+			VI.firstName ← inputBoxValue	
+			firstNameValid ← VI.validateFirstName(); //firstNameValid is a state, so will cause the page to re-render when it is changed.
+}/>
+		<input type="text" id="surnameInput" onChange= {
+			VI.surname ← inputBoxValue
+			surnameValid ← VI.validateSurname()
+}/>
+		<input type="text" id="emailInput" onChange={
+			VI.email ← inputBoxValue
+			emailValid ← VI.validateEmail()
+}/>
+			
+		<input type="text" id="usernameInput"className={`{input ${usernameValid ? "validInput" : "InvalidInput"}}`} onChange={
+			VI.username ← inputBoxValue
+			usernameValid ← VI.validateUsername()
+}/>   //validInput will highlight the box green, invalidInput will highlight the box red 
+		<input type="password" id="passwordInput" onChange={
+			VI.password ← inputBoxValue
+			passwordValid ← VI.validatePassword() 
+}/>
+		<input type="submit"/>
+	</form>
+</div>
+);

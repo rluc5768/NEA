@@ -22,7 +22,7 @@ function Login({ setToken }) {
     });
     console.log("token" in response);
     if ("token" in response) {
-      setToken(response["token"]);
+      setToken(response["token"]); //removed the navigate as when authorise_user api is called the state of the token should change re-rendering the page.
     }
     //====================== Do something with errors HERE ==========================
   };

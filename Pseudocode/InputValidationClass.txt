@@ -1,0 +1,72 @@
+class ValidateInputs()
+{
+	constructor()
+	{
+		firstName ← "";
+		surname ← ""
+		email ← ""
+		username ← ""
+		password ← ""
+	}
+	function validateFirstName() : bool //returns true for valid, false for invalid.
+	{
+		IF (this.firstName == "") THEN return false END IF//First check if null
+		IF (this.firstName.length > 35) THEN return false END IF
+	}
+	function validateSurname() : bool
+	{
+		IF (this.surname == "") THEN return false END IF
+		IF (this.surname.length > 35) THEN return false END IF
+	}
+	function validateEmail() : bool
+	{
+		IF (this.email == "") THEN return false END IF
+	
+	}
+	function validateUsername(): bool
+	{
+		IF (this.username == "")THEN return false END IF
+		IF (this.username.length <5 OR this.username.length > 50) THEN return false END IF
+		
+	}
+	function validatePassword() : bool
+	{
+		IF (this.password == "") THEN return false END IF
+		IF (this.password.length < 5) THEN return false END IF
+		
+		bool numberCharFlag ← false;
+		bool lowercaseCharFlag ← false;
+		bool uppercaseCharFlag ← false;
+		bool specialCharFlag ← false;
+		for(i ← 0; i< this.password.length; i++){
+			code ← this.password.length[i].charCodeAt(0)			
+			if( (code >= 32 AND code <=47) OR (code >= 58 AND code <= 64) OR (code >=91 AND code <=96) OR (code >= 123 AND code <= 126)) THEN
+				specialCharFlag ← true;
+			END IF	
+			if( code >= 97 AND code <= 122) THEN
+				lowercaseCharFlag ← true
+			END IF
+			if(code >= 65 AND code <= 90) THEN
+				uppercaseCharFlag ← true
+			END IF
+			IF (code >= 48 AND code <= 57) THEN 
+				numberCharFlag ← true
+			END IF
+		}
+		
+	}
+	function allInputs(page : string) : string[] //page is "login" or "signUp"
+	{
+		errors = []
+		
+		IF (!this.validateUsername()) THEN errors.Add("InvalidUsername") END IF
+		IF(!this.validatePassword()) THENerrors.Add("InvalidPassword") END IF
+
+		IF(page == "SignUp") THEN
+			IF(!this.validateFirstName()) THEN errors.Add("InvalidFirstName")END IF
+			IF(!this.validateSurname()) THEN errors.Add("InvalidSurname") END IF
+			IF(!this.validateEmail()) THEN errors.Add("InvalidEmail") END IF
+		END IF
+	}
+	
+}
