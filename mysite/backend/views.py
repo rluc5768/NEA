@@ -125,6 +125,6 @@ class AuthoriseUserView(APIView):
         # =============================================================================================
         payload = jwt.decode(jwt_token, config(
             'AUTH_SECRET'), algorithms=["HS256"])
-        print(payload)
+        print(payload)  # verify that payload is valid json and
 
         return Response(False)

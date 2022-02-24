@@ -1,40 +1,71 @@
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import useToken from "../Hooks/useToken.js";
+import "./SignUp.css";
+import ValidateInputs from "../ExternalClasses/InputValidationClass";
+const VI = new ValidateInputs();
 export default function SignUp({ setToken }) {
-  const [firstName, setFirstName] = useState();
-  const [surname, setSurname] = useState();
-  const [email, setEmail] = useState();
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
-  const navigate = useNavigate();
+  const [firstNameValid, setfirstNameValid] = useState(false);
+  const [surnameValid, setSurnameValid] = useState(false);
+  const [emailValid, setEmailValid] = useState(false);
+  const [usernameValid, setUsernameValid] = useState(false);
+  const [passwordValid, setPasswordValid] = useState(false);
+  const [invalidData, setInvalidData] = useState("");
 
-  const HandleSubmit = async () => {
-    fetch("http://localhost:8000/api/v1/user/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        firstName: firstName,
-        surname: surname,
-        email: email,
-        username: username,
-        password: password,
-      }),
-    })
-      .then((data) => data.json())
-      .then((response) => {
-        console.log(response);
-        if ("token" in response) {
-          console.log("SUCCESS"); //Save token in session storage and then navigate to the homepage.abs
-          setToken(response["token"]);
-          navigate("/home");
-        }
-      });
+  const HandleSubmit = async function () {
+    let errors = VI.allInputs("signUp");
+    if (errors.length == 0) {
+      try {
+        //POST
+        await fetch("http://localhost:8000/api/v1/user/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            firstName: VI.firstName,
+            surname: VI.surname,
+            email: VI.email,
+            username: VI.username,
+            password: VI.password,
+          }),
+        })
+          .then((data) => data.json())
+          .then((response) => console.log());
+      } catch (e) {
+        console.log("error" + e);
+        setInvalidData("Error occured.");
+      }
+    } else {
+      ChangeInputState(errors);
+      setInvalidData("Invalid data entered.");
+    }
   };
+  const ChangeInputState = (errors) => {
+    for (let i = 0; i < errors.length; i++) {
+      switch (errors[i]) {
+        case "firstNameInvalid":
+          setfirstNameValid(false);
+          break;
+        case "surnameInvalid":
+          setSurnameValid(false);
+          break;
+        case "emailInvalid":
+          setEmailValid(false);
+          break;
+        case "UsernameInvalid":
+          setUsernameValid(false);
+          break;
+        case "passwordInvalid":
+          setPasswordValid(false);
+          break;
+      }
+    }
+  };
+
   return (
     <>
+      <h1>{invalidData}</h1>
       <div className="container">
         <form id="signUpForm" onSubmit={HandleSubmit} action="#">
           <div className="row">
@@ -44,11 +75,14 @@ export default function SignUp({ setToken }) {
             <div className="col-sm-4">
               <input
                 type="text"
-                className="form-control"
+                className={`form-control ${
+                  firstNameValid ? "validInput" : "invalidInput"
+                }`}
                 placeholder="e.g. Robert"
                 id="firstNameInput"
                 onChange={(e) => {
-                  setFirstName(e.target.value);
+                  VI.firstName = e.target.value;
+                  setfirstNameValid(VI.validateFirstName());
                 }}
               />
             </div>
@@ -58,11 +92,14 @@ export default function SignUp({ setToken }) {
             <div className="col-sm-4">
               <input
                 type="text"
-                className="form-control"
+                className={`form-control ${
+                  surnameValid ? "validInput" : "invalidInput"
+                }`}
                 placeholder="e.g. Lucas"
                 id="surnameInput"
                 onChange={(e) => {
-                  setSurname(e.target.value);
+                  VI.surname = e.target.value;
+                  setSurnameValid(VI.validateSurname());
                 }}
               />
             </div>
@@ -75,11 +112,14 @@ export default function SignUp({ setToken }) {
             <div className="col-sm-10">
               <input
                 type="text"
-                className="form-control"
+                className={`form-control ${
+                  emailValid ? "validInput" : "invalidInput"
+                }`}
                 placeholder="email@example.com"
                 id="emailInput"
                 onChange={(e) => {
-                  setEmail(e.target.value);
+                  VI.email = e.target.value;
+                  setEmailValid(VI.validateEmail());
                 }}
               />
             </div>
@@ -91,11 +131,14 @@ export default function SignUp({ setToken }) {
             <div className="col-sm-10">
               <input
                 type="text"
-                className="form-control"
+                className={`form-control ${
+                  usernameValid ? "validInput" : "invalidInput"
+                }`}
                 placeholder="Username"
                 id="usernameInput"
                 onChange={(e) => {
-                  setUsername(e.target.value);
+                  VI.username = e.target.value;
+                  setUsernameValid(VI.validateUsername());
                 }}
               />
             </div>
@@ -107,11 +150,14 @@ export default function SignUp({ setToken }) {
             <div className="col">
               <input
                 type="password"
-                className="form-control"
+                className={`form-control ${
+                  passwordValid ? "validInput" : "invalidInput"
+                }`}
                 placeholder="Password"
                 id="passwordInput"
                 onChange={(e) => {
-                  setPassword(e.target.value);
+                  VI.password = e.target.value;
+                  setPasswordValid(VI.validatePassword());
                 }}
               />
             </div>
