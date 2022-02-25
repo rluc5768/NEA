@@ -1,0 +1,10 @@
+"/user"
+POST - validates data in request and if invalid returns error message, otherwise enters data into database and returns a jwt token.
+error message form:
+{
+    "type":"valdiation_error",
+    "errors": {
+        "errorCode":"errorMessage",
+        etc
+    }
+}
