@@ -1,10 +1,10 @@
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import useToken from "../Hooks/useToken.js";
 import "./SignUp.css";
 import ValidateInputs from "../ExternalClasses/InputValidationClass";
-import { useRef } from "react";
-export default function SignUp({ setToken }) {
+
+export default function SignUp() {
   const [firstNameValid, setfirstNameValid] = useState(false);
   const [surnameValid, setSurnameValid] = useState(false);
   const [emailValid, setEmailValid] = useState(false);
@@ -15,8 +15,7 @@ export default function SignUp({ setToken }) {
 
   const HandleSubmit = async function () {
     let errors = VI.current.allInputs("signUp");
-    console.log(errors);
-    console.log(VI);
+
     if (errors.length == 0) {
       try {
         //POST
@@ -34,7 +33,17 @@ export default function SignUp({ setToken }) {
           }),
         })
           .then((data) => data.json())
-          .then((response) => console.log(response));
+          .then((response) => {
+            if (response["type"] == "validation_error") {
+              //handle error
+              ChangeInputState(Object.keys(response["errors"])); //Object.keys() returns a list of keys from the dictionary.
+              setInvalidData("Invalid data entered.");
+            } else {
+              //save token in session storage.
+              setInvalidData("");
+              console.log(response);
+            }
+          });
       } catch (e) {
         console.log("error" + e);
         setInvalidData("Error occured.");
@@ -47,20 +56,29 @@ export default function SignUp({ setToken }) {
   const ChangeInputState = (errors) => {
     for (let i = 0; i < errors.length; i++) {
       switch (errors[i]) {
-        case "firstNameInvalid":
+        case "InvalidFirstName":
           setfirstNameValid(false);
           break;
-        case "surnameInvalid":
+        case "InvalidSurname":
           setSurnameValid(false);
           break;
-        case "emailInvalid":
+        case "InvalidEmail":
           setEmailValid(false);
           break;
-        case "UsernameInvalid":
+        case "EmailAlreadyExists":
+          setEmailValid(false);
+          break;
+
+        case "InvalidUsername":
           setUsernameValid(false);
           break;
-        case "passwordInvalid":
+        case "UsernameAlreadyExists":
+          setUsernameValid(false);
+          break;
+        case "InvalidPassword":
           setPasswordValid(false);
+          break;
+        default:
           break;
       }
     }
@@ -85,7 +103,7 @@ export default function SignUp({ setToken }) {
                 id="firstNameInput"
                 onChange={(e) => {
                   VI.current.firstName = e.target.value;
-                  setfirstNameValid(VI.current.validateFirstName());
+                  setfirstNameValid(VI.current.validateFirstName()); //Creates a new annomynous function, will change to external function (passing set function in).
                 }}
               />
             </div>

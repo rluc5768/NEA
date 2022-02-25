@@ -9,7 +9,7 @@ async function loginUser(userDetails) {
     body: JSON.stringify(userDetails),
   }).then((data) => data.json());
 }
-function Login({ setToken }) {
+function Login() {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ function Login({ setToken }) {
     });
     console.log("token" in response);
     if ("token" in response) {
-      setToken(response["token"]); //removed the navigate as when authorise_user api is called the state of the token should change re-rendering the page.
+      //setToken(response["token"]); //removed the navigate as when authorise_user api is called the state of the token should change re-rendering the page.
     }
     //====================== Do something with errors HERE ==========================
   };

@@ -34,18 +34,15 @@ class UserView(APIView):
             newUser.save()  # performs an insert sql statement.
 
             print(newUser)
-            return Response({'token': create_jwt(newUser.username)}, status=200)
+            return Response({'type': 'auth_token', 'token': create_jwt(newUser.username)}, status=200)
         except ValidationError as e:
-            errorCodeList = []
-            # print(e.error_dict["__all__"][0].message)
+            errorCodeList = {}
             for x in e.error_dict["__all__"]:
+                errorCodeList[x.code] = str(x.message)
 
-                errorCodeList.append(
-                    {"message": str(x.message), "code": x.code})
-            print(e)
-            return Response(json.dumps(errorCodeList), status=200)
+            return Response({'type': 'validation_error', 'errors': errorCodeList}, status=200)
         except:
-            return Response({'message': 'The data entered is invalid', 'code': 'invalidData'})
+            return Response({'type': 'validation_error', 'errors': {'invalidData': 'The data entered is invalid'}})
 
 
 class Login(APIView):

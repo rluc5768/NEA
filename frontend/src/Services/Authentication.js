@@ -9,7 +9,6 @@ const Authentication = {
 
   //return true; //true if valid, false if invalid.
   User: function (token) {
-    console.log(token);
     return validateJWT(token);
   },
 };

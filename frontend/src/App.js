@@ -10,20 +10,19 @@ import {
 import useToken from "./Hooks/useToken.js";
 import { Navbar } from "./Components/ComponentImports.js";
 function App() {
-  const { token, setToken } = useToken();
-  console.log("token: " + token);
+  //console.log("token: " + token);
   return (
     <>
       <BrowserRouter>
         <Navbar />
         <Routes>
           {/* Private outlet is used so that either the component is rendered if the user is authenticated, or it will redirect to /login*/}
-          <Route path="/private" element={<PrivateOutlet token={token} />}>
+          <Route path="/private" element={<PrivateOutlet />}>
             <Route path="" element={<Private />} />
             <Route path="home" element={<Home />} />
           </Route>
-          <Route path="/sign_up" element={<SignUp setToken={setToken} />} />
-          <Route path="/login" element={<Login setToken={setToken} />} />
+          <Route path="/sign_up" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
