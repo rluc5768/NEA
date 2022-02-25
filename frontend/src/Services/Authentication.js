@@ -8,8 +8,20 @@ const Authentication = {
   //=============== End of intial validation =============
 
   //return true; //true if valid, false if invalid.
-  User: function (token) {
-    return validateJWT(token);
+  User: function (currentToken, setToken) {
+    if(currentToken == null){
+      return false;
+    }
+    else{
+      fetch("http://localhost:8000/api/v1/authorise_user/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(currentToken),
+      }).then((data)=>data.json())
+      .then((valid)=> {return valid;});
+    }
   },
 };
 export default Authentication;

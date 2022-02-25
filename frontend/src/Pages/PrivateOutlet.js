@@ -8,14 +8,20 @@ function getToken() {
   //gets the value of token from session storage.
   return JSON.parse(sessionStorage.getItem("token"));
 }
-function saveToken(userToken) {
-  sessionStorage.setItem("token", JSON.stringify(userToken));
-}
+
 function PrivateOutlet() {
-  const [pageState, setState] = useState("loading");
-  const [token, setToken] = useState(getToken());
-  console.log(token);
-  saveToken("iasudbwuia;udbw");
+  const [pageState, setPageState] = useState("loading");
+ // const [token, setToken] = useState(getToken());
+  
+  /*const saveToken = (userToken) => {
+    sessionStorage.setItem("token", JSON.stringify(userToken));
+    setToken(userToken);
+  }*/
+  
+  const auth = Authentication.User(getToken());
+  console.log(auth);
+  
+
   /*useEffect(() => {
     //useeffect called after every re-render.
     (async function () {

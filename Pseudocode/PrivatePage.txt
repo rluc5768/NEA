@@ -1,0 +1,32 @@
+PrivateOutlet(){
+    const [token, setToken] = useState(getState()) //initial value is getToken();
+
+    const[pageState, setPageState] = useState("loading")
+    const auth = Authentication.User( token, setToken );
+
+    
+    setPageState(auth ? "valid":"invalid")
+    
+    if (pageState == "loading"){
+        return <h1>loading</h1>;
+    }
+    else{
+        reutrn pageState == "valid" ? <Outlet/> : <Login/>;
+    }
+    
+}
+Authentication {
+    User: function(currentToken, setToken){
+        IF currentToken == null THEN    
+            return false;
+        fetch.then(data => data.json())
+        .then((valid) => {
+            if(NOT valid) THEN  
+                setToken(null);
+                return false;
+            else
+                return true;
+                
+        })
+    }
+}
