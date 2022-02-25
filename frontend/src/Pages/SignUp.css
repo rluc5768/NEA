@@ -1,0 +1,23 @@
+::placeholder {
+  color: black;
+  opacity: 1;
+}
+.validInput {
+  background-color: green;
+  opacity: 0.5;
+}
+.validInput:focus {
+  background-color: green;
+  opacity: 0.5;
+}
+.invalidInput:focus {
+  background-color: red;
+  opacity: 0.2;
+}
+.invalidInput {
+  background-color: red;
+  opacity: 0.2;
+}
+.size {
+  color: red;
+}

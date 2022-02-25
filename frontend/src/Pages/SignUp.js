@@ -3,7 +3,7 @@ import { useState } from "react";
 import useToken from "../Hooks/useToken.js";
 import "./SignUp.css";
 import ValidateInputs from "../ExternalClasses/InputValidationClass";
-const VI = new ValidateInputs();
+import { useRef } from "react";
 export default function SignUp({ setToken }) {
   const [firstNameValid, setfirstNameValid] = useState(false);
   const [surnameValid, setSurnameValid] = useState(false);
@@ -11,9 +11,12 @@ export default function SignUp({ setToken }) {
   const [usernameValid, setUsernameValid] = useState(false);
   const [passwordValid, setPasswordValid] = useState(false);
   const [invalidData, setInvalidData] = useState("");
+  let VI = useRef(new ValidateInputs());
 
   const HandleSubmit = async function () {
-    let errors = VI.allInputs("signUp");
+    let errors = VI.current.allInputs("signUp");
+    console.log(errors);
+    console.log(VI);
     if (errors.length == 0) {
       try {
         //POST
@@ -23,15 +26,15 @@ export default function SignUp({ setToken }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            firstName: VI.firstName,
-            surname: VI.surname,
-            email: VI.email,
-            username: VI.username,
-            password: VI.password,
+            firstName: VI.current.firstName,
+            surname: VI.current.surname,
+            email: VI.current.email,
+            username: VI.current.username,
+            password: VI.current.password,
           }),
         })
           .then((data) => data.json())
-          .then((response) => console.log());
+          .then((response) => console.log(response));
       } catch (e) {
         console.log("error" + e);
         setInvalidData("Error occured.");
@@ -81,8 +84,8 @@ export default function SignUp({ setToken }) {
                 placeholder="e.g. Robert"
                 id="firstNameInput"
                 onChange={(e) => {
-                  VI.firstName = e.target.value;
-                  setfirstNameValid(VI.validateFirstName());
+                  VI.current.firstName = e.target.value;
+                  setfirstNameValid(VI.current.validateFirstName());
                 }}
               />
             </div>
@@ -98,8 +101,9 @@ export default function SignUp({ setToken }) {
                 placeholder="e.g. Lucas"
                 id="surnameInput"
                 onChange={(e) => {
-                  VI.surname = e.target.value;
-                  setSurnameValid(VI.validateSurname());
+                  console.log(e.target.value);
+                  VI.current.surname = e.target.value;
+                  setSurnameValid(VI.current.validateSurname());
                 }}
               />
             </div>
@@ -118,8 +122,8 @@ export default function SignUp({ setToken }) {
                 placeholder="email@example.com"
                 id="emailInput"
                 onChange={(e) => {
-                  VI.email = e.target.value;
-                  setEmailValid(VI.validateEmail());
+                  VI.current.email = e.target.value;
+                  setEmailValid(VI.current.validateEmail());
                 }}
               />
             </div>
@@ -137,8 +141,8 @@ export default function SignUp({ setToken }) {
                 placeholder="Username"
                 id="usernameInput"
                 onChange={(e) => {
-                  VI.username = e.target.value;
-                  setUsernameValid(VI.validateUsername());
+                  VI.current.username = e.target.value;
+                  setUsernameValid(VI.current.validateUsername());
                 }}
               />
             </div>
@@ -156,8 +160,8 @@ export default function SignUp({ setToken }) {
                 placeholder="Password"
                 id="passwordInput"
                 onChange={(e) => {
-                  VI.password = e.target.value;
-                  setPasswordValid(VI.validatePassword());
+                  VI.current.password = e.target.value;
+                  setPasswordValid(VI.current.validatePassword());
                 }}
               />
             </div>
