@@ -57,6 +57,7 @@ return(
 			surnameValid ← VI.validateSurname()
 }/>
 		<input type="text" id="emailInput" onChange={
+			
 			VI.email ← inputBoxValue
 			emailValid ← VI.validateEmail()
 }/>

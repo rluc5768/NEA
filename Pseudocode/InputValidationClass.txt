@@ -39,7 +39,7 @@ class ValidateInputs()
 		bool uppercaseCharFlag ← false;
 		bool specialCharFlag ← false;
 		for(i ← 0; i< this.password.length; i++){
-			code ← this.password.length[i].charCodeAt(0)			
+			code ← this.password[i].charCodeAt(0)			
 			if( (code >= 32 AND code <=47) OR (code >= 58 AND code <= 64) OR (code >=91 AND code <=96) OR (code >= 123 AND code <= 126)) THEN
 				specialCharFlag ← true;
 			END IF	
