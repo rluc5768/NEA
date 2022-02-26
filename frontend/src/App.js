@@ -17,8 +17,8 @@ function App() {
         <Navbar />
         <Routes>
           {/* Private outlet is used so that either the component is rendered if the user is authenticated, or it will redirect to /login*/}
-          <Route path="/private" element={<PrivateOutlet />}>
-            <Route path="" element={<Private />} />
+          <Route path="/" element={<PrivateOutlet />}>
+            <Route path="private" element={<Private />} />
             <Route path="home" element={<Home />} />
           </Route>
           <Route path="/sign_up" element={<SignUp />} />

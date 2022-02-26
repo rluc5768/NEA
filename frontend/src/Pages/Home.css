@@ -1,0 +1,10 @@
+#grid-container {
+  position: relative;
+  height: 80vh;
+  width: 100%;
+  top: 10vh;
+}
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}

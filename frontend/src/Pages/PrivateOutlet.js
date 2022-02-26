@@ -6,38 +6,31 @@ import React from "react";
 import { Login } from "./PageImports.js";
 function getToken() {
   //gets the value of token from session storage.
-  return JSON.parse(sessionStorage.getItem("token"));
+  try {
+    return JSON.parse(sessionStorage.getItem("token"));
+  } catch (e) {
+    sessionStorage.removeItem("token");
+  }
 }
 
 function PrivateOutlet() {
   const [pageState, setPageState] = useState("loading");
-  //const [token, setToken] = useState(getToken());
-  
-  /*const saveToken = (userToken) => {
-    sessionStorage.setItem("token", JSON.stringify(userToken));
-    setToken(userToken);
-  }*/
-  
-  //const auth = Authentication.User(getToken());
+
+  if (pageState === "loading") {
+    Authentication.User(getToken(), setPageState);
+  }
+
+  //const auth = Authentication.User(getToken(), setPageState);
   //console.log(auth);
-  //setPageState(auth? "valid":"invalid");
-
-  useEffect(() => {
-    //useeffect called after every re-render.
-    (function () {
-      try {
-        const auth = Authentication.User(getToken());
-        console.log(auth);
-        setPageState(auth ? "valid" : "invalid");
-      } catch {
-        setPageState("invalid");
-      }
-    })();
-  }, []);
-
+  //If the authentication fails, token should be removed, otherwise remains the same.
   if (pageState === "loading") {
     return <div>loading</div>;
   }
-  return pageState === "valid" ? <Outlet /> : <Login />;
+  console.log(pageState);
+  return pageState === "valid" ? (
+    <Outlet />
+  ) : (
+    <Login setPageState={setPageState} />
+  );
 }
 export default PrivateOutlet;

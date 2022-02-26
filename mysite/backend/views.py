@@ -23,7 +23,43 @@ def create_jwt(username):
     return jwt.encode(payload, config('AUTH_SECRET'), algorithm="HS256")
 
 
+def authenticate_jwt(token):
+    if token == None:
+        print("response: False")
+        return (False, None)
+
+    dotCounter = 0
+    for c in token:
+        if c == '.':
+            dotCounter += 1
+    if dotCounter != 2:  # token must contain 2 dots to split the string into 3 sections: header, payload, signature
+        return (False, None)
+    # ======================= HEADER will be checked for my implementation ========================
+    # =============================================================================================
+    try:
+        payload = jwt.decode(token, config(
+            'AUTH_SECRET'), algorithms=["HS256"])
+        print("returning true!")
+        return (True, payload["username"])
+        # verify that payload is valid json and
+    except:
+        print("excep")
+        # Invalid signature error will be returned if it fails jwt.decode.
+        return (False, None)
+
+
 class UserView(APIView):
+    def get(self, request):
+        try:
+            result = authenticate_jwt(request.headers["authorization"])
+            if not result[0]:
+                raise Exception("InvalidJWT")
+            user = User.objects.get(username=result[1])
+
+            return Response({"type": "user_details", "details": {"username": user.username, "email": user.email, "firstName": user.fname, "surname": user.sname, "stravaAuthorised": user.stravaAuthorised, "stravaAccessToken": user.stravaAccessToken, "stravaRefreshToken": user.stravaRefreshToken, "stravaAccessTokenExpiresAt": user.stravaAccessTokenExpiresAt}}, status=200)
+        except:
+            return Response({"type": "validation_error", "errors": {"InvalidJWT": "The jwt has been modified."}})
+
     def post(self, request):  # create a new user
         print(request.data)
 
@@ -46,6 +82,7 @@ class UserView(APIView):
 
 
 class Login(APIView):
+
     def post(self, request):
 
         # ==============Validating username and password for login ======================
@@ -86,21 +123,21 @@ class Login(APIView):
                     print("O hash: "+result.hexdigest())
                     if result.hexdigest() == user.hashedPassword:
                         encoded_jwt = create_jwt(request.data["username"])
-                        return Response({"token": encoded_jwt})
+                        return Response({"type": "auth_token", "token": encoded_jwt})
                     else:
 
                         raise ValidationError(
                             _('Password is incorrect.'), code="IncorrectPassword")
 
         except ValidationError as e:
-            errorCodeList = []
+            errorCodeList = {}
 
             for x in e.error_list:
 
-                errorCodeList.append(
-                    {"message": str(x.message), "code": x.code})
+                errorCodeList[x.code] = str(x.message)
+
             print(e)
-            return Response(errorCodeList, status=200)
+            return Response({'type': 'validation_error', 'errors': errorCodeList}, status=200)
 
         # =========================================================================
 
@@ -111,22 +148,4 @@ class Login(APIView):
 class AuthoriseUserView(APIView):
     def post(self, request):  # Here we authenticate the user (JWT).
         print(request.data)
-        if request.data == None:
-            return Response(False)
-        jwt_token = request.data
-        dotCounter = 0
-        for c in jwt_token:
-            if c == '.':
-                dotCounter += 1
-        if dotCounter != 2:  # token must contain 2 dots to split the string into 3 sections: header, payload, signature
-            return Response(False)
-        # ======================= HEADER will be checked for my implementation ========================
-        # =============================================================================================
-        try:
-            jwt.decode(jwt_token, config(
-            'AUTH_SECRET'), algorithms=["HS256"])
-             # verify that payload is valid json and
-        except:
-            
-            return Response(False) #Invalid signature error will be returned if it fails jwt.decode.
-        return Response(True)
+        return Response(authenticate_jwt(request.data)[0])

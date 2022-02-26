@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+
 async function loginUser(userDetails) {
   return fetch("http://localhost:8000/api/v1/login/", {
     method: "POST",
@@ -9,10 +10,10 @@ async function loginUser(userDetails) {
     body: JSON.stringify(userDetails),
   }).then((data) => data.json());
 }
-function Login() {
+function Login({ setPageState }) {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   const HandleSubmit = async (event) => {
     event.preventDefault(); //Prevents the default form action for Ajax form submissions.
@@ -20,9 +21,11 @@ function Login() {
       username,
       password,
     });
-    console.log("token" in response);
-    if ("token" in response) {
-      //setToken(response["token"]); //removed the navigate as when authorise_user api is called the state of the token should change re-rendering the page.
+    console.log(response["type"] + " " + response["token"]);
+    if (response["type"] == "auth_token") {
+      //SaveToken here //removed the navigate as when authorise_user api is called the state of the token should change re-rendering the page.
+      sessionStorage.setItem("token", JSON.stringify(response["token"]));
+      setPageState("valid");
     }
     //====================== Do something with errors HERE ==========================
   };

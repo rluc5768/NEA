@@ -2,7 +2,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import useToken from "../Hooks/useToken.js";
 import "./SignUp.css";
-import ValidateInputs from "../ExternalClasses/InputValidationClass";
+import ValidateInputs from "../External/InputValidationClass.js";
 
 export default function SignUp() {
   const [firstNameValid, setfirstNameValid] = useState(false);
@@ -39,7 +39,7 @@ export default function SignUp() {
               ChangeInputState(Object.keys(response["errors"])); //Object.keys() returns a list of keys from the dictionary.
               setInvalidData("Invalid data entered.");
             } else {
-              //save token in session storage.
+              //save token in session storage and redirect to /"home"
               setInvalidData("");
               console.log(response);
             }

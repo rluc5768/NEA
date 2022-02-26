@@ -4,7 +4,7 @@ function Navbar() {
   return (
     <ul>
       <li>
-        <Link to="/private/home">home</Link>
+        <Link to="/home">home</Link>
       </li>
       <li>
         <Link to="/private">private</Link>

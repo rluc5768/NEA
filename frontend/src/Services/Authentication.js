@@ -8,40 +8,34 @@ const Authentication = {
   //=============== End of intial validation =============
 
   //return true; //true if valid, false if invalid.
-  User: function (currentToken, setToken) {
-    if(currentToken == null){
-      return false;
+  User: function (currentToken, setPageState) {
+    console.log("c_token: " + currentToken);
+    if (currentToken == null) {
+      setPageState("invalid");
     }
-    else{
-      fetch("http://localhost:8000/api/v1/authorise_user/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(currentToken),
-      }).then((data)=>data.json())
-      .then((valid)=> {
-        if(!valid){
-
-          return false;
-        }
-        else{
-          return true;
-        }
+    validateJWT(currentToken)
+      .then((data) => data.json())
+      .then((valid) => {
+        console.log(valid);
+        setPageState(valid ? "valid" : "invalid");
       });
-    }
+    /*
+    (async function () {
+      let auth = (await validateJWT(currentToken)).bodyUsed;
+      console.dir("asdsa" + auth);
+      setPageState(auth ? "valid" : "invalid");
+    })(); //auto-executing function*/
   },
 };
+
 export default Authentication;
 
 async function validateJWT(token) {
-  const response = await fetch("http://localhost:8000/api/v1/authorise_user/", {
+  return fetch("http://localhost:8000/api/v1/authorise_user/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(token),
   });
-  const json = await response.json();
-  return json;
 }
