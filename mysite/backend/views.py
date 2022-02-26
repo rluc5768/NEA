@@ -111,6 +111,8 @@ class Login(APIView):
 class AuthoriseUserView(APIView):
     def post(self, request):  # Here we authenticate the user (JWT).
         print(request.data)
+        if request.data == None:
+            return Response(False)
         jwt_token = request.data
         dotCounter = 0
         for c in jwt_token:
@@ -120,8 +122,11 @@ class AuthoriseUserView(APIView):
             return Response(False)
         # ======================= HEADER will be checked for my implementation ========================
         # =============================================================================================
-        payload = jwt.decode(jwt_token, config(
+        try:
+            jwt.decode(jwt_token, config(
             'AUTH_SECRET'), algorithms=["HS256"])
-        print(payload)  # verify that payload is valid json and
-
-        return Response(False)
+             # verify that payload is valid json and
+        except:
+            
+            return Response(False) #Invalid signature error will be returned if it fails jwt.decode.
+        return Response(True)

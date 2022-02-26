@@ -11,28 +11,29 @@ function getToken() {
 
 function PrivateOutlet() {
   const [pageState, setPageState] = useState("loading");
- // const [token, setToken] = useState(getToken());
+  //const [token, setToken] = useState(getToken());
   
   /*const saveToken = (userToken) => {
     sessionStorage.setItem("token", JSON.stringify(userToken));
     setToken(userToken);
   }*/
   
-  const auth = Authentication.User(getToken());
-  console.log(auth);
-  
+  //const auth = Authentication.User(getToken());
+  //console.log(auth);
+  //setPageState(auth? "valid":"invalid");
 
-  /*useEffect(() => {
+  useEffect(() => {
     //useeffect called after every re-render.
-    (async function () {
+    (function () {
       try {
-        const auth = await Authentication.User(token);
-        setState(auth ? "valid" : "invalid");
+        const auth = Authentication.User(getToken());
+        console.log(auth);
+        setPageState(auth ? "valid" : "invalid");
       } catch {
-        setState("invalid");
+        setPageState("invalid");
       }
     })();
-  }, []);*/
+  }, []);
 
   if (pageState === "loading") {
     return <div>loading</div>;

@@ -20,7 +20,15 @@ const Authentication = {
         },
         body: JSON.stringify(currentToken),
       }).then((data)=>data.json())
-      .then((valid)=> {return valid;});
+      .then((valid)=> {
+        if(!valid){
+
+          return false;
+        }
+        else{
+          return true;
+        }
+      });
     }
   },
 };
