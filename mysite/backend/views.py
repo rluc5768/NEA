@@ -1,3 +1,4 @@
+from http.client import HTTPException
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -56,13 +57,18 @@ class UserView(APIView):
                 raise Exception("InvalidJWT")
             user = User.objects.get(username=result[1])
             for key in request.data.keys():
-                setattr(user,key, request.data[key]) 
+                setattr(user, key, request.data[key])
             user.save()
-            return Response({"type":"update_confirmation"})
+            return Response({"type": "update_confirmation"})
         except:
-            return Response({"type":"validation_error","errors": {"InvalidJWT": "The jwt has been modified."}})
+            return Response({"type": "validation_error", "errors": {"InvalidJWT": "The jwt has been modified."}})
         pass
+
     def get(self, request):
+
+        print(request.user)
+
+        '''
         try:
             result = authenticate_jwt(request.headers["authorization"])
             if not result[0]:
@@ -70,8 +76,8 @@ class UserView(APIView):
             user = User.objects.get(username=result[1])
 
             return Response({"type": "user_details", "details": {"username": user.username, "email": user.email, "firstName": user.fname, "surname": user.sname, "stravaAuthorised": user.stravaAuthorised, "stravaAccessToken": user.stravaAccessToken, "stravaRefreshToken": user.stravaRefreshToken, "stravaAccessTokenExpiresAt": user.stravaAccessTokenExpiresAt}}, status=200)
-        except:
-            return Response({"type": "validation_error", "errors": {"InvalidJWT": "The jwt has been modified."}})
+        except:'''
+        return Response({"type": "validation_error", "errors": {"InvalidJWT": "The jwt has been modified."}})
 
     def post(self, request):  # create a new user
         print(request.data)
@@ -162,6 +168,8 @@ class AuthoriseUserView(APIView):
     def post(self, request):  # Here we authenticate the user (JWT).
         print(request.data)
         return Response(authenticate_jwt(request.data)[0])
+
+
 class ActivityView(APIView):
     def get(self, request):
         try:
@@ -169,11 +177,12 @@ class ActivityView(APIView):
             result = authenticate_jwt(request.headers["Authorization"])
             if not result[0]:
                 raise Exception("InvalidJWT")
-            activities = Activity.objects.filter(username=result[1]);
+            activities = Activity.objects.filter(username=result[1])
             print(activities.get())
-            return Response({"type":"success"})
+            return Response({"type": "success"})
         except Exception as e:
             return Response({'type': 'validation_error', 'errors': {'invalidData': str(e)}})
-    def post(self, request):#authenticate JWT
-        
+
+    def post(self, request):  # authenticate JWT
+
         pass
