@@ -75,7 +75,7 @@ function Home() {//if there is a validation_error then log the user out.
   const HandleClick = function () {
     //First check if the user is strava_authorised. by calling get on "/user"
     //IF NOT strava authorised, redirected to strava login, url checked and user details modified.
-    fetch("http://localhost:8000/api/v1/user/", {
+    fetch("http://localhost:8000/api/v1/user", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -94,12 +94,12 @@ function Home() {//if there is a validation_error then log the user out.
           }
           else{
             //get all activites from database (will happen on page load) and make request to strava.
-            fetch("http://localhost:8000/api/v1/activity/",{
+            fetch("", {
               method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: getToken(),
-            },);
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: getToken(),
+              },});
           }
           console.log(userDetails);
         } else {

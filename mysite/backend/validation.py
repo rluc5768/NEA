@@ -20,3 +20,8 @@ def validatePassword(password):
     if NoSpecialCharacter or NoNumber or NoUppercase or NoLowercase:
         return False
     return True
+
+{
+    "firstName":"Robert",
+    "surname":"lucas"
+}

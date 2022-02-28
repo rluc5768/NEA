@@ -175,4 +175,5 @@ class ActivityView(APIView):
         except Exception as e:
             return Response({'type': 'validation_error', 'errors': {'invalidData': str(e)}})
     def post(self, request):#authenticate JWT
+        
         pass
