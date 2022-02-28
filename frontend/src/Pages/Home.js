@@ -10,14 +10,19 @@ function getToken() {
   }
 }
 
-function Home() {
+function Home() {//if there is a validation_error then log the user out.
+  
   const search = useLocation().search;
   console.log(search);
   console.log(new URLSearchParams(search).get("code"));
-
+  
   let scope = new URLSearchParams(search).get("scope");
-  if (scope == "read,activity:read_all") {
+  if (scope == "read,activity:read_all") {//Will check the previous url to stop 'bad requests' or clear search params.
     let code = new URLSearchParams(search).get("code");
+    var uri = window.location.toString();//from https://onlinecode.org/jquery-remove-query-string-parameter-from-url-expertphp/
+    var clean_uri = uri.substring(0, uri.indexOf("?"));
+	    window.history.replaceState({}, document.title, clean_uri);
+    
     console.log(code);
     fetch("https://www.strava.com/oauth/token", {
       method: "POST",
@@ -34,14 +39,43 @@ function Home() {
       .then((data) => data.json())
       .then((res) => {
         try {
+          
+          if ("token_type" in res){
+            //given token
           //Save tokens in database and set stravaAuthorised to true. THen can make requests.
-        } catch (e) {}
-      });
+          //PUT request to "/user" to update user profile.
+          fetch("http://localhost:8000/api/v1/user/", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization":getToken(),
+            },
+            body: JSON.stringify({
+              stravaAuthorised:true,
+              stravaAccessToken:res["access_token"],
+              stravaRefreshToken:res["refresh_token"],
+              stravaAccessTokenExpiresAt:res["expires_at"]
+            }),
+          })
+          }
+        
+          else{//handle errors
+            console.log(res)
+          }
+      
+          
+          
+        }
+        catch(e){
+
+        }
+      
+    });
   }
   const HandleClick = function () {
     //First check if the user is strava_authorised. by calling get on "/user"
     //IF NOT strava authorised, redirected to strava login, url checked and user details modified.
-    fetch("http://localhost:8000/api/v1/user", {
+    fetch("http://localhost:8000/api/v1/user/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -58,8 +92,19 @@ function Home() {
             window.location =
               "https://www.strava.com/oauth/authorize?client_id=53221&redirect_uri=http://localhost:3000/home&response_type=code&scope=activity:read_all";
           }
+          else{
+            //get all activites from database (will happen on page load) and make request to strava.
+            fetch("http://localhost:8000/api/v1/activity/",{
+              method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: getToken(),
+            },);
+          }
+          console.log(userDetails);
         } else {
           //unsuccessful - handle errors
+          console.log(res);
         }
       });
   };

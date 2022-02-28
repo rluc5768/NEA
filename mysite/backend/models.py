@@ -102,8 +102,9 @@ class ActivityDetail(models.Model):
 
 class Activity(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE)
-    activity_id = models.ForeignKey(ActivityDetail, on_delete=models.CASCADE)
-
+    activity = models.ForeignKey(ActivityDetail, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.activity;
 
 class WorkoutPlan(models.Model):
     workout_plan_id = models.CharField(primary_key=True, max_length=80)

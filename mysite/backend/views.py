@@ -49,6 +49,19 @@ def authenticate_jwt(token):
 
 
 class UserView(APIView):
+    def put(self, request):
+        try:
+            result = authenticate_jwt(request.headers["authorization"])
+            if not result[0]:
+                raise Exception("InvalidJWT")
+            user = User.objects.get(username=result[1])
+            for key in request.data.keys():
+                setattr(user,key, request.data[key]) 
+            user.save()
+            return Response({"type":"update_confirmation"})
+        except:
+            return Response({"type":"validation_error","errors": {"InvalidJWT": "The jwt has been modified."}})
+        pass
     def get(self, request):
         try:
             result = authenticate_jwt(request.headers["authorization"])
@@ -149,3 +162,17 @@ class AuthoriseUserView(APIView):
     def post(self, request):  # Here we authenticate the user (JWT).
         print(request.data)
         return Response(authenticate_jwt(request.data)[0])
+class ActivityView(APIView):
+    def get(self, request):
+        try:
+            print(request.headers["Authorization"])
+            result = authenticate_jwt(request.headers["Authorization"])
+            if not result[0]:
+                raise Exception("InvalidJWT")
+            activities = Activity.objects.filter(username=result[1]);
+            print(activities.get())
+            return Response({"type":"success"})
+        except Exception as e:
+            return Response({'type': 'validation_error', 'errors': {'invalidData': str(e)}})
+    def post(self, request):#authenticate JWT
+        pass
