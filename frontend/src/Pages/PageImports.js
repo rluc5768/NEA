@@ -4,5 +4,5 @@ import Private from "./Private.js";
 import Login from "./Login.js";
 import PrivateOutlet from "./PrivateOutlet.js";
 import SignUp from "./SignUp.js";
-
-export { Home, NotFound, Private, Login, PrivateOutlet, SignUp };
+import Planner from "./Planner";
+export { Home, NotFound, Private, Login, PrivateOutlet, SignUp, Planner };

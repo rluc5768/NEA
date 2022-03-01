@@ -1,3 +1,4 @@
+from email.policy import default
 from http.client import HTTPException
 from django.shortcuts import render
 from rest_framework.views import APIView
@@ -9,10 +10,12 @@ import json
 import os
 from .validation import *
 from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, FieldDoesNotExist
 import hashlib
 from .models import *
+from .exceptions import *
 # Create your views here.
+
 
 
 def create_jwt(username):
@@ -24,45 +27,49 @@ def create_jwt(username):
     return jwt.encode(payload, config('AUTH_SECRET'), algorithm="HS256")
 
 
-def authenticate_jwt(token):
+def authenticate_jwt(token):#Is user logged in?
     if token == None:
         print("response: False")
-        return (False, None)
+        return False
 
     dotCounter = 0
-    for c in token:
+    for c in str(token):
+      
         if c == '.':
+           
             dotCounter += 1
     if dotCounter != 2:  # token must contain 2 dots to split the string into 3 sections: header, payload, signature
-        return (False, None)
+        
+        return False
+
+    
     # ======================= HEADER will be checked for my implementation ========================
     # =============================================================================================
-    try:
-        payload = jwt.decode(token, config(
-            'AUTH_SECRET'), algorithms=["HS256"])
-        print("returning true!")
-        return (True, payload["username"])
-        # verify that payload is valid json and
-    except:
-        print("excep")
-        # Invalid signature error will be returned if it fails jwt.decode.
-        return (False, None)
+    
+    payload = jwt.decode(token, config(
+        'AUTH_SECRET'), algorithms=["HS256"])
+    
+    return True
+    # verify that payload is valid json and
+   
 
 
 class UserView(APIView):
     def put(self, request):
-        try:
-            result = authenticate_jwt(request.headers["authorization"])
-            if not result[0]:
-                raise Exception("InvalidJWT")
-            user = User.objects.get(username=result[1])
-            for key in request.data.keys():
+        print(request.username)
+        
+        user = User.objects.get(username=request.username)
+        for key in request.data.keys():
+            #Check if user has attribute
+            #print(f"{key}                  {getattr(user,key)}")
+            if getattr(user, key, None) is None:
+                raise FieldDoesNotExist
+            else:
                 setattr(user, key, request.data[key])
-            user.save()
-            return Response({"type": "update_confirmation"})
-        except:
-            return Response({"type": "validation_error", "errors": {"InvalidJWT": "The jwt has been modified."}})
-        pass
+        
+        user.save()
+        return Response({"type": "update_confirmation"})
+        
 
     def get(self, request):
 
@@ -102,12 +109,12 @@ class UserView(APIView):
 
 class Login(APIView):
 
-    def post(self, request):
-
+    def post(self, request):#Returns a JWT if the username and hashed password match.
+        
         # ==============Validating username and password for login ======================
-        try:
+        
             errors = []
-
+            
             if len(request.data) != 2:
                 errors.append(ValidationError(
                     _('The username and password must be submitted in the request.'), code="IncorrectAmountOfData"))
@@ -125,8 +132,6 @@ class Login(APIView):
                 if not User.objects.filter(username=username).exists():
                     errors.append(ValidationError(
                         _('Username does not exist.'), code="UsernameDoesNotExists"))
-                print(request.data)
-                print(errors)
                 if len(errors) != 0:
                     raise ValidationError(errors)
                 # Data is valid if this happens (WE KNOW THE USER EXISTS IF IT REACHES HERE), now check if the user exists and compare the hashed passwords.
@@ -148,15 +153,7 @@ class Login(APIView):
                         raise ValidationError(
                             _('Password is incorrect.'), code="IncorrectPassword")
 
-        except ValidationError as e:
-            errorCodeList = {}
-
-            for x in e.error_list:
-
-                errorCodeList[x.code] = str(x.message)
-
-            print(e)
-            return Response({'type': 'validation_error', 'errors': errorCodeList}, status=200)
+        
 
         # =========================================================================
 
@@ -167,7 +164,14 @@ class Login(APIView):
 class AuthoriseUserView(APIView):
     def post(self, request):  # Here we authenticate the user (JWT).
         print(request.data)
-        return Response(authenticate_jwt(request.data)[0])
+        if "token" not in request.data:
+            raise TokenNotFoundException()
+        token = request.data["token"]
+        is_auth = authenticate_jwt(token)
+        if is_auth:
+            return Response({"type":"authorised"})
+        else:
+            raise InvalidTokenException(token)
 
 
 class ActivityView(APIView):

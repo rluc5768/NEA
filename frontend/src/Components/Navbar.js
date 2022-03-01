@@ -10,6 +10,9 @@ function Navbar() {
         <Link to="/private">private</Link>
       </li>
       <li>
+        <Link to="/workout_planner">Planner</Link>
+      </li>
+      <li>
         <Link to="/sign_up">Sign up</Link>
       </li>
     </ul>

@@ -6,6 +6,7 @@ import {
   Login,
   PrivateOutlet,
   SignUp,
+  Planner
 } from "./Pages/PageImports.js";
 import useToken from "./Hooks/useToken.js";
 import { Navbar } from "./Components/ComponentImports.js";
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<PrivateOutlet />}>
             <Route path="private" element={<Private />} />
             <Route path="home" element={<Home />} />
+            <Route path="workout_planner" element={ <Planner/>}/>
           </Route>
           <Route path="/sign_up" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
