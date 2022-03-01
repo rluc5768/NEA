@@ -62,7 +62,7 @@ class UserView(APIView):
         for key in request.data.keys():
             #Check if user has attribute
             #print(f"{key}                  {getattr(user,key)}")
-            if getattr(user, key, None) is None:
+            if not hasattr(user, key):
                 raise FieldDoesNotExist
             else:
                 setattr(user, key, request.data[key])
