@@ -172,16 +172,11 @@ class AuthoriseUserView(APIView):
 
 class ActivityView(APIView):
     def get(self, request):
-        try:
-            print(request.headers["Authorization"])
-            result = authenticate_jwt(request.headers["Authorization"])
-            if not result[0]:
-                raise Exception("InvalidJWT")
-            activities = Activity.objects.filter(username=result[1])
-            print(activities.get())
-            return Response({"type": "success"})
-        except Exception as e:
-            return Response({'type': 'validation_error', 'errors': {'invalidData': str(e)}})
+        print(request.username)
+        activities = Activity.objects.filter(username=request.username)
+        print(activities.get())
+        return Response({"type": "success"})
+        
 
     def post(self, request):  # authenticate JWT
 
