@@ -17,6 +17,7 @@ function Home() {//if there is a validation_error then log the user out.
   console.log(new URLSearchParams(search).get("code"));
   
   let scope = new URLSearchParams(search).get("scope");
+  console.log("scope: "+scope);
   if (scope == "read,activity:read_all") {//Will check the previous url to stop 'bad requests' or clear search params.
     let code = new URLSearchParams(search).get("code");
     var uri = window.location.toString();//from https://onlinecode.org/jquery-remove-query-string-parameter-from-url-expertphp/
@@ -94,12 +95,26 @@ function Home() {//if there is a validation_error then log the user out.
           }
           else{
             //get all activites from database (will happen on page load) and make request to strava.
-            fetch("", {
+            fetch("http://localhost:8000/api/v1/activity/", {
               method: "GET",
               headers: {
                 "Content-Type": "application/json",
                 Authorization: getToken(),
-              },});
+              },})
+              .then((data)=>data.json())
+              .then((res)=>{
+                console.log(res);
+                if(res["type"] == "success"){
+                  if(res["activities"].length > 0){
+                    //do something with the activities (add to activity list)
+                  }
+              
+                }
+                else{
+                  //handle error and get activites from strava and save to database.
+                  
+                }
+              });
           }
           console.log(userDetails);
         } else {

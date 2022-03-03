@@ -34,6 +34,7 @@ function Navbar(props) {//props.userLoggedIn, props.username
                 Tracking
               </Link>
             </li>
+            {props.userLoggedIn &&
             <div className="navbar-right">
               <li className="nav-item">
                 <Link className="nav-link" to="/account">
@@ -41,6 +42,14 @@ function Navbar(props) {//props.userLoggedIn, props.username
                 </Link>
               </li>
             </div>
+}
+          {!props.userLoggedIn && 
+            <li className="nav-item">
+            <Link className="nav-link" to="/sign_up">
+              SignUp
+            </Link>
+          </li>
+          }
 
           </ul>
         </div>

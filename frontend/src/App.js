@@ -37,11 +37,11 @@ function App() {
             <Route path="home" element={<Home />} />
             <Route path="workout_planner" element={ <Planner/>}/>
             <Route path="tracking" element={<Tracking/>}/>
-            <Route path="account" element={<Account username={username}/>}> {/*For a tab menu */}
-              <Route path="deleteAccount" element={<DeleteAccount/>}/>
+            <Route path="account" element={<Account username={username} LogUserInOrOut={LogUserInOrOut}/>}> {/*For a tab menu */}
+              <Route path="deleteAccount" element={<DeleteAccount username={username} LogUserInOrOut={LogUserInOrOut} /> }/>
             </Route>
           </Route>
-          <Route path="/sign_up" element={<SignUp />} />
+          <Route path="/sign_up" element={<SignUp LogUserInOrOut={LogUserInOrOut} />} />
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

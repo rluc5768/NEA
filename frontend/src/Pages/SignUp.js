@@ -4,16 +4,18 @@ import useToken from "../Hooks/useToken.js";
 import "./SignUp.css";
 import ValidateInputs from "../External/InputValidationClass.js";
 
-export default function SignUp() {
+export default function SignUp(props) {
   const [firstNameValid, setfirstNameValid] = useState(false);
   const [surnameValid, setSurnameValid] = useState(false);
   const [emailValid, setEmailValid] = useState(false);
   const [usernameValid, setUsernameValid] = useState(false);
   const [passwordValid, setPasswordValid] = useState(false);
   const [invalidData, setInvalidData] = useState("");
+  const navigate = useNavigate();
   let VI = useRef(new ValidateInputs());
 
-  const HandleSubmit = async function () {
+  const HandleSubmit = async function (event) {
+    event.preventDefault();
     let errors = VI.current.allInputs("signUp");
 
     if (errors.length == 0) {
@@ -38,10 +40,15 @@ export default function SignUp() {
               //handle error
               ChangeInputState(Object.keys(response["errors"])); //Object.keys() returns a list of keys from the dictionary.
               setInvalidData("Invalid data entered.");
+              
+
             } else {
               //save token in session storage and redirect to /"home"
               setInvalidData("");
               console.log(response);
+              sessionStorage.setItem("token", JSON.stringify(response["token"]));
+              props.LogUserInOrOut(true);//combine LogUserInOrOut to store JWT in session storage.
+              navigate("/home");
             }
           });
       } catch (e) {
@@ -88,7 +95,7 @@ export default function SignUp() {
     <>
       <h1>{invalidData}</h1>
       <div className="container">
-        <form id="signUpForm" onSubmit={HandleSubmit} action="#">
+        <form id="signUpForm" onSubmit={e=>HandleSubmit(e)} >
           <div className="row">
             <label htmlFor="firstNameInput" className="form-label col-sm-2">
               First Name
@@ -195,7 +202,7 @@ export default function SignUp() {
         </form>
         <br />
         <p className="text-center">
-          Already have an account? sign in <Link to="/login">here.</Link>
+          Already have an account? sign in <Link to="/home">here.</Link>
         </p>
       </div>
     </>

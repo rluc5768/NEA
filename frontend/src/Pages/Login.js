@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, Link } from "react-router-dom";
 
 async function loginUser(userDetails) {
   return fetch("http://localhost:8000/api/v1/login/", {
@@ -21,6 +21,7 @@ function Login({ setUserLoggedIn }) {
       username,
       password,
     });
+    console.log(response);
     console.log(response["type"] + " " + response["token"]);
     if (response["type"] == "auth_token") {
       //SaveToken here //removed the navigate as when authorise_user api is called the state of the token should change re-rendering the page.
@@ -48,6 +49,7 @@ function Login({ setUserLoggedIn }) {
           <button type="submit">Submit</button>
         </div>
       </form>
+      <p><Link to="/sign_up">Or sign up here.</Link></p>
     </>
   );
 }

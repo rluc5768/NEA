@@ -4,6 +4,7 @@ import {getToken} from "../utils/Token";
 
 export default function Account(props){
     const[pageState, setPageState] = useState("loading")
+    const[optionClicked, setOptionClicked] = useState(false);
     const username = useRef("");
     const email = useRef("");
     const fname = useRef("");
@@ -29,6 +30,10 @@ export default function Account(props){
             }
             setPageState("loaded");
             
+        }).catch((error) => {
+            if(error.response.status == 401){
+                props.LogUserInOrOut(false);
+            }
         })
     });
 
@@ -37,8 +42,9 @@ const HandleLogout = ()=>{
 }
 const HandleDeleteAccount = () => {// DELETE request to "/user"
     //Confirm by typing "Delete_{username}"
-    navigate("/account/deleteAccount", {username:props.username});
-
+    
+    //setOptionClicked(true);
+    navigate("/account/deleteAccount");
 }
 
     if(pageState=="loading"){
@@ -55,6 +61,7 @@ const HandleDeleteAccount = () => {// DELETE request to "/user"
         <button onClick={HandleLogout}>Logout</button>
         <button onClick={HandleDeleteAccount}>Delete Account</button>
         <button>Change Password</button>
+        <Outlet/>
     </>
     );
 }

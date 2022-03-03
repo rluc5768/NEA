@@ -80,6 +80,9 @@ class UserView(APIView):
         newUser.save()  # performs an insert sql statement.
         print(newUser)
         return Response({'type': 'auth_token', 'token': create_jwt(newUser.username)}, status=200)
+    def delete(self, request):
+        User.objects.get(username=request.username).delete();
+        return Response({"type":"delete_confirmation"})
         
         
 
@@ -156,7 +159,7 @@ class ActivityView(APIView):
     def get(self, request):
         activities = Activity.objects.filter(username=request.username)
         print(activities.get())
-        return Response({"type": "success"})
+        return Response({"type": "success", "activities":activities})
         
 
     def post(self, request):  # Create activity
