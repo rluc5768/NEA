@@ -16,7 +16,7 @@ class Auth:
         endpoint = request.path[8:]
         
         # There won't be validation if a POST request is make to the user/ or /login endpoints as there won't be any
-        if not ((endpoint == "user/" or endpoint == "login/" or endpoint=="authorise_user/") and request.method == "POST"):
+        if not ((endpoint == "user/" or endpoint == "login/") and request.method == "POST"):
             
             if "Authorization" in request.headers:  # Authenticate 'JWT' token here.
                 
@@ -55,10 +55,10 @@ class Auth:
                 return JsonResponse({"type": "error", "code": "ValidationError", "errors": errors})
             case "TokenNotFoundException":
                 return JsonResponse({"type":"error", "code": exception.code, "message":exception.message})
-            case "InvalidToken":
+            case "InvalidTokenException":
                 return JsonResponse({"type":"error", "code": exception.code, "message" : exception.message,"sent_token":exception.sent_token})
             case "DoesNotExist":
-                return JsonResponse({"type":"error", "code":"InstanceDoesNotExist", "message":"The instance does not exist." })
+                return JsonResponse({"type":"error", "code":"DoesNotExist", "message":"The data specified does not exist." })
             case "FieldDoesNotExist":
                 return JsonResponse({"type":"error", "code":"FieldDoesNotExist", "message":"The specified field in the model does not exist."})
             case _:

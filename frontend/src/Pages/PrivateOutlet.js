@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import useToken from "../Hooks/useToken.js";
 import Authentication from "../Services/Authentication";
 import React from "react";
@@ -13,24 +13,19 @@ function getToken() {
   }
 }
 
-function PrivateOutlet() {
-  const [pageState, setPageState] = useState("loading");
-
-  if (pageState === "loading") {
-    Authentication.User(getToken(), setPageState);
-  }
-
-  //const auth = Authentication.User(getToken(), setPageState);
-  //console.log(auth);
-  //If the authentication fails, token should be removed, otherwise remains the same.
-  if (pageState === "loading") {
-    return <div>loading</div>;
-  }
-  console.log(pageState);
-  return pageState === "valid" ? (
-    <Outlet />
+function PrivateOutlet(props) {
+  //const [userLoggedIn, setUserLoggedIn] = useState(false);
+  console.log("RENDERED")
+  
+  useEffect(()=>{//executes after render.
+    Authentication.User(getToken(), props.LogUserInOrOut, props.changeUsername)
+  });
+  
+  
+  return props.userLoggedIn? (
+    <Outlet context={[props.userLoggedIn,props.LogUserInOrOut]}/>
   ) : (
-    <Login setPageState={setPageState} />
+    <Login setUserLoggedIn={props.LogUserInOrOut} />
   );
 }
 export default PrivateOutlet;

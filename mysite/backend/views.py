@@ -60,8 +60,6 @@ class UserView(APIView):
         
         user = User.objects.get(username=request.username)
         for key in request.data.keys():
-            #Check if user has attribute
-            #print(f"{key}                  {getattr(user,key)}")
             if not hasattr(user, key):
                 raise FieldDoesNotExist
             else:
@@ -72,39 +70,18 @@ class UserView(APIView):
         
 
     def get(self, request):
-
-        print(request.user)
-
-        '''
-        try:
-            result = authenticate_jwt(request.headers["authorization"])
-            if not result[0]:
-                raise Exception("InvalidJWT")
-            user = User.objects.get(username=result[1])
-
-            return Response({"type": "user_details", "details": {"username": user.username, "email": user.email, "firstName": user.fname, "surname": user.sname, "stravaAuthorised": user.stravaAuthorised, "stravaAccessToken": user.stravaAccessToken, "stravaRefreshToken": user.stravaRefreshToken, "stravaAccessTokenExpiresAt": user.stravaAccessTokenExpiresAt}}, status=200)
-        except:'''
-        return Response({"type": "validation_error", "errors": {"InvalidJWT": "The jwt has been modified."}})
-
+        user = User.objects.get(username=request.username)
+        return Response({"type": "user_details", "details": {"username": user.username, "email": user.email, "firstName": user.fname, "surname": user.sname, "stravaAuthorised": user.stravaAuthorised, "stravaAccessToken": user.stravaAccessToken, "stravaRefreshToken": user.stravaRefreshToken, "stravaAccessTokenExpiresAt": user.stravaAccessTokenExpiresAt}}, status=200)
+        
     def post(self, request):  # create a new user
-        print(request.data)
-
-        try:
-            newUser = User(username=request.data['username'], email=request.data['email'], fname=request.data['firstName'],
-                           sname=request.data['surname'], hashedPassword=request.data['password'], uniqueSalt=os.urandom(32))  # password will be hashed if valid when validating the fields of the model
-            newUser.full_clean()  # checks if data entered is valid
-            newUser.save()  # performs an insert sql statement.
-
-            print(newUser)
-            return Response({'type': 'auth_token', 'token': create_jwt(newUser.username)}, status=200)
-        except ValidationError as e:
-            errorCodeList = {}
-            for x in e.error_dict["__all__"]:
-                errorCodeList[x.code] = str(x.message)
-
-            return Response({'type': 'validation_error', 'errors': errorCodeList}, status=200)
-        except:
-            return Response({'type': 'validation_error', 'errors': {'invalidData': 'The data entered is invalid'}})
+        newUser = User(username=request.data['username'], email=request.data['email'], fname=request.data['firstName'],
+                        sname=request.data['surname'], hashedPassword=request.data['password'], uniqueSalt=os.urandom(32))  # password will be hashed if valid when validating the fields of the model
+        newUser.full_clean()  # checks if data entered is valid
+        newUser.save()  # performs an insert sql statement.
+        print(newUser)
+        return Response({'type': 'auth_token', 'token': create_jwt(newUser.username)}, status=200)
+        
+        
 
 
 class Login(APIView):
@@ -162,26 +139,26 @@ class Login(APIView):
 
 # Boolean return based on if the JWT sent is valid.
 class AuthoriseUserView(APIView):
-    def post(self, request):  # Here we authenticate the user (JWT).
-        print(request.data)
+    def get(self, request):  # Here we authenticate the user (JWT).
+        '''print(request.data)
         if "token" not in request.data:
             raise TokenNotFoundException()
         token = request.data["token"]
         is_auth = authenticate_jwt(token)
         if is_auth:
-            return Response({"type":"authorised"})
-        else:
-            raise InvalidTokenException(token)
+            '''
+        return Response({"type":"authorised", "username":request.username})#Token will be authorised in middleware
+        ''' else:
+            raise InvalidTokenException(token)'''
 
 
 class ActivityView(APIView):
     def get(self, request):
-        print(request.username)
         activities = Activity.objects.filter(username=request.username)
         print(activities.get())
         return Response({"type": "success"})
         
 
-    def post(self, request):  # authenticate JWT
+    def post(self, request):  # Create activity
 
         pass

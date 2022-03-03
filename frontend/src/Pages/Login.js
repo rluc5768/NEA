@@ -10,7 +10,7 @@ async function loginUser(userDetails) {
     body: JSON.stringify(userDetails),
   }).then((data) => data.json());
 }
-function Login({ setPageState }) {
+function Login({ setUserLoggedIn }) {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
   //const navigate = useNavigate();
@@ -25,7 +25,7 @@ function Login({ setPageState }) {
     if (response["type"] == "auth_token") {
       //SaveToken here //removed the navigate as when authorise_user api is called the state of the token should change re-rendering the page.
       sessionStorage.setItem("token", JSON.stringify(response["token"]));
-      setPageState("valid");
+      setUserLoggedIn(true);
     }
     //====================== Do something with errors HERE ==========================
   };

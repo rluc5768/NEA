@@ -1,17 +1,22 @@
-export default function Api(url, body, authorisation, method) {
-  //authorisation : boolean (to add the authorization header)
-  let header = {
+import {getToken, getStravaToken} from "../utils/Token";
+
+export default function APIPost(url, body, external, tokenNeeded){//string : object : bool
+  let token;
+  let headers = {
     "Content-Type": "application/json",
-  };
-  if (authorisation) {
-    header["Authorization"] = getToken();
+  };    
+  if(tokenNeeded){
+    token = !external ? getToken() : getStravaToken();
+    headers["Authorisation"] = "Bearer ".concat(token);
+
   }
-  let content = {
-    method: method,
-    headers: header,
-  };
-  if (method == "POST") {
-    content["body"] = JSON.stringify(body);
-  }
-  return fetch(url, content).then((data) => data.json());
+  return fetch(url, {
+    method:"POST",
+    headers: headers,
+    body:JSON.stringify(body),
+  }).then((data)=>data.json())
+  .catch((error)=>{
+    //Log user out
+  })
+
 }

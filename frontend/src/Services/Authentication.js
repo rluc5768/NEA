@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Login from "../Pages/Login";
 const Authentication = {
   //User : function (){//This is where the token will be validated
   //const [token, setToken] = useToken();
@@ -8,23 +9,30 @@ const Authentication = {
   //=============== End of intial validation =============
 
   //return true; //true if valid, false if invalid.
-  User: function (currentToken, setPageState) {
+  User: function (currentToken, setUserLoggedIn, changeUsername) {
     console.log("c_token: " + currentToken);
     if (currentToken == null) {
-      setPageState("invalid");
+      setUserLoggedIn(false);
+      return;
     }
-    validateJWT(currentToken)
+    //console.log("Bearer ".concat(currentToken))
+    validateJWT("Bearer ".concat(currentToken))
       .then((data) => data.json())
-      .then((valid) => {
-        console.log(valid);
-        setPageState(valid ? "valid" : "invalid");
-      });
-    /*
-    (async function () {
-      let auth = (await validateJWT(currentToken)).bodyUsed;
-      console.dir("asdsa" + auth);
-      setPageState(auth ? "valid" : "invalid");
-    })(); //auto-executing function*/
+      .then((res) => {
+        console.log(res);
+        if( res["type"] == "authorised"){//Can trust JWT
+          
+          setUserLoggedIn(true);
+          changeUsername(res["username"]);
+        }
+        else{
+          setUserLoggedIn(false);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+    
   },
 };
 
@@ -32,10 +40,10 @@ export default Authentication;
 
 async function validateJWT(token) {
   return fetch("http://localhost:8000/api/v1/authorise_user/", {
-    method: "POST",
+    method: "GET",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": token,
     },
-    body: JSON.stringify(token),
   });
 }
