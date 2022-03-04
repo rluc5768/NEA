@@ -3,8 +3,7 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import {getToken} from "../utils/Token";
 
 export default function Account(props){
-    const[pageState, setPageState] = useState("loading")
-    const[optionClicked, setOptionClicked] = useState(false);
+    const[pageState, setPageState] = useState("loading");
     const username = useRef("");
     const email = useRef("");
     const fname = useRef("");
@@ -38,7 +37,8 @@ export default function Account(props){
     });
 
 const HandleLogout = ()=>{
-
+    sessionStorage.removeItem("token");
+    props.LogUserInOrOut(false);
 }
 const HandleDeleteAccount = () => {// DELETE request to "/user"
     //Confirm by typing "Delete_{username}"

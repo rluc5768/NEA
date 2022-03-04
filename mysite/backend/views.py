@@ -1,6 +1,7 @@
 from email.policy import default
 from http.client import HTTPException
 import math
+from textwrap import indent
 from django.conf import settings
 from django.shortcuts import render
 from rest_framework.views import APIView
@@ -70,6 +71,8 @@ class UserView(APIView):
                 if key == "password":
                     setattr(user, "hashedPassword", hashlib.sha256(request.data[key].encode('utf-8') + user.uniqueSalt).hexdigest())
                 
+                elif key == "email":
+                    raise FieldCannotBeModifiedException()
                 else:
                     if not hasattr(user, key):
                         raise FieldDoesNotExist
@@ -168,13 +171,41 @@ class AuthoriseUserView(APIView):
 class ActivityView(APIView):
     def get(self, request):
         activities = Activity.objects.filter(username=request.username)
-        print(activities.get())
-        return Response({"type": "success", "activities":activities})
+        dict={}
+        for a in activities:
+            dict[a.activity.activity_id] = {
+                "activity_date":a.activity.activity_date,
+                "distance":a.activity.distance,
+                "polyline":a.activity.polyline,
+                "exercise_type":a.activity.exercise_type,
+                "moving_time":a.activity.moving_time,
+                "elapsed_time":a.activity.elapsed_time,
+                "activity_name":a.activity.activity_name,
+            }
+            #print(dict)
+        return Response({"type": "success", "activities":dict})
         
 
-    def post(self, request):  # Create activity
+    def post(self, request):  # Save activities to dataBase.
+        if "activities" in request.data:
+            activities = request.data["activities"]
+            user = User.objects.get(username=request.username);
+            for activity in activities:
+                if not Activity.objects.filter(activity_id=activity["id"], username=request.username).exists():
+                    #Save to database
+                    a = ActivityDetail(activity_id=activity["id"], activity_date=activity["start_date"], distance=activity["distance"], polyline=activity["map"]["summary_polyline"], exercise_type=activity["type"], moving_time=activity["moving_time"], elapsed_time=activity["elapsed_time"])
+                   #a.full_clean()
+                   #Create a correspondin entry to activity (link table)
+                    link = Activity(username=user, activity=a)
+                   #link.full_clean()
 
-        pass
+                    a.save()
+                    link.save()
+                print(json.dumps(activity, indent=4))
+            return Response({"type":"activities_added"})
+        else:
+            raise MissingDataSentException();
+        
 class GenerateUUIDAndSendMail(APIView):
     def post(self, request):#UUID V4 will be used as it uses random characters and incorporates a timestamp.
         if "username" in request.data:

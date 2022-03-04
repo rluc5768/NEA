@@ -19,3 +19,7 @@ class UUIDInvalidException(Exception):
     def __init__(self, reason):
         self.code = f"{reason}UUID"
         self.message = "The uuid must be used within 2 hours." if reason == "Expired" else "The uuid must not be empty."
+class FieldCannotBeModifiedException(Exception):
+    def __init__(self):
+        self.code = "FieldCannotBeModified"
+        self.message = "The specified field cannot be modified"

@@ -74,5 +74,9 @@ class Auth:
                 return JsonResponse({"type":"error", "code":exception.code, "message":exception.message})
             case "UUIDInvalidException":
                 return JsonResponse({"type":"error", "code":exception.code, "message":exception.message})
+            case "FieldCannotBeModifiedException":
+                return JsonResponse({"type":"error", "code":exception.code, "message":exception.message})
+            case "MultiValueDictKeyError":
+                return JsonResponse({"type":"error","code":"MissingData"})
             case _:
                 JsonResponse({"type": "error", "detail": str(exception)})

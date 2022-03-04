@@ -95,17 +95,18 @@ class ActivityDetail(models.Model):
     activity_id = models.CharField(primary_key=True, max_length=17)
     activity_date = models.DateTimeField()
     distance = models.DecimalField(decimal_places=3, max_digits=8)
-    polyline = models.CharField(max_length=512)
-    exercise_type = models.CharField(max_length=2)
+    polyline = models.CharField(max_length=4096)
+    exercise_type = models.CharField(max_length=5)
     moving_time = models.IntegerField()
     elapsed_time = models.IntegerField()
+    activity_name = models.CharField(default="",max_length=100)
 
 
 class Activity(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE)
     activity = models.ForeignKey(ActivityDetail, on_delete=models.CASCADE)
     def __str__(self):
-        return self.activity;
+        return self.username.username;
 
 class WorkoutPlan(models.Model):
     workout_plan_id = models.CharField(primary_key=True, max_length=80)

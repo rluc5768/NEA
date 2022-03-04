@@ -11,4 +11,5 @@ import AccountDetails from "./AccountDetails";
 import ResetPassword from "./ResetPassword.js";
 import DeleteAccount from "./DeleteAccount";
 import VerifyPasswordReset from "./VerifyPasswordReset.js";
+
 export { Home, NotFound, Private, Login, PrivateOutlet, SignUp, Planner, Account, Tracking, AccountDetails, ResetPassword, DeleteAccount, VerifyPasswordReset};
