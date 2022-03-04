@@ -1,0 +1,19 @@
+Home components{
+    Map,
+    ActivityList,
+    LoadButton
+}
+
+On page load:
+    refreshActivities();
+
+refreshActivities(){
+    Get activities from database
+    save to state.
+}
+on load button click:
+    Check if access_token is expired, if yes:
+        getNewAccessToken
+    Make request to "/strava/athlete/activities."
+    Save activities to database ("/activity" POST)
+    refreshActivities();
