@@ -11,3 +11,11 @@ class InvalidTokenException(Exception):
         self.code = "InvalidToken"
         self.message = "The JWT token is invalid."
         self.sent_token = token
+class MissingDataSentException(Exception):
+    def __init__(self):
+        self.code = "MissingData";
+        self.message = "There are missing mandatory fields in the body of the request.";
+class UUIDInvalidException(Exception):
+    def __init__(self, reason):
+        self.code = f"{reason}UUID"
+        self.message = "The uuid must be used within 2 hours." if reason == "Expired" else "The uuid must not be empty."

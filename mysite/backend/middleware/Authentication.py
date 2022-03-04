@@ -14,9 +14,16 @@ class Auth:
         #Check if request ends in a trailing slash, if not append one to the end.
         
         endpoint = request.path[8:]
-        
+        no_auth_endpoints = [
+            "user/",
+            "login/",
+            "uuidAndEmail/",
+            "uuid/",
+            "exchangeUUID/"
+        ]
+        print(endpoint in no_auth_endpoints)
         # There won't be validation if a POST request is make to the user/ or /login endpoints as there won't be any
-        if not ((endpoint == "user/" or endpoint == "login/") and request.method == "POST"):
+        if not ((endpoint in no_auth_endpoints) and request.method == "POST"):
             
             if "Authorization" in request.headers:  # Authenticate 'JWT' token here.
                 
@@ -45,11 +52,13 @@ class Auth:
         # print(type(exception))
         print(type(exception).__name__)
         print(f"exc: {str(exception)} {type(exception)}  {exception}")
+        
+        
         match type(exception).__name__:  # matches each exception type
             
             case "ValidationError":
                 errors = {}
-                for x in exception.error_list:
+                for x in exception.error_dict["__all__"]:
                     errors[x.code] = str(x.message)
                 
                 return JsonResponse({"type": "error", "code": "ValidationError", "errors": errors})
@@ -61,5 +70,9 @@ class Auth:
                 return JsonResponse({"type":"error", "code":"DoesNotExist", "message":"The data specified does not exist." })
             case "FieldDoesNotExist":
                 return JsonResponse({"type":"error", "code":"FieldDoesNotExist", "message":"The specified field in the model does not exist."})
+            case "MissingDataSentException":
+                return JsonResponse({"type":"error", "code":exception.code, "message":exception.message})
+            case "UUIDInvalidException":
+                return JsonResponse({"type":"error", "code":exception.code, "message":exception.message})
             case _:
                 JsonResponse({"type": "error", "detail": str(exception)})

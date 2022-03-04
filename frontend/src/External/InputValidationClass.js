@@ -29,16 +29,16 @@ class ValidateInputs {
     if (this.username.length < 5 || this.username.length > 50) return false;
     return true;
   }
-  validatePassword() {
-    if (this.password == "") return false;
-    if (this.password.length < 5) return false;
+  static validatePassword(password) {//Static allows the method to be called without instantiating the class.
+    if (password == "") return false;
+    if (password.length < 5) return false;
 
     let numberCharFlag = false;
     let lowercaseCharFlag = false;
     let uppercaseCharFlag = false;
     let specialCharFlag = false;
-    for (let i = 0; i < this.password.length; i++) {
-      const code = this.password[i].charCodeAt(0);
+    for (let i = 0; i < password.length; i++) {
+      const code = password[i].charCodeAt(0);
       if (
         (code >= 32 && code <= 47) ||
         (code >= 58 && code <= 64) ||
@@ -63,7 +63,7 @@ class ValidateInputs {
     let errors = [];
 
     if (!this.validateUsername()) errors.push("InvalidUsername");
-    if (!this.validatePassword()) errors.push("InvalidPassword");
+    if (!this.validatePassword(this.password)) errors.push("InvalidPassword");
     if (page == "signUp") {
       if (!this.validateFirstName()) errors.push("InvalidFirstName");
       if (!this.validateSurname()) errors.push("InvalidSurname");

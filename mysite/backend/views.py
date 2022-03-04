@@ -1,5 +1,7 @@
 from email.policy import default
 from http.client import HTTPException
+import math
+from django.conf import settings
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -14,6 +16,9 @@ from django.core.exceptions import ValidationError, FieldDoesNotExist
 import hashlib
 from .models import *
 from .exceptions import *
+import uuid
+from django.core.mail import send_mail
+from datetime import datetime, timedelta
 # Create your views here.
 
 
@@ -60,10 +65,15 @@ class UserView(APIView):
         
         user = User.objects.get(username=request.username)
         for key in request.data.keys():
-            if not hasattr(user, key):
-                raise FieldDoesNotExist
-            else:
-                setattr(user, key, request.data[key])
+            
+            
+                if key == "password":
+                    setattr(user, "hashedPassword", hashlib.sha256(request.data[key].encode('utf-8') + user.uniqueSalt).hexdigest())
+                
+                else:
+                    if not hasattr(user, key):
+                        raise FieldDoesNotExist
+                    setattr(user, key, request.data[key])
         
         user.save()
         return Response({"type": "update_confirmation"})
@@ -165,3 +175,53 @@ class ActivityView(APIView):
     def post(self, request):  # Create activity
 
         pass
+class GenerateUUIDAndSendMail(APIView):
+    def post(self, request):#UUID V4 will be used as it uses random characters and incorporates a timestamp.
+        if "username" in request.data:
+            id = uuid.uuid1();
+            user = User.objects.get(username=request.data["username"]);
+            user.uuid = id;
+            user.save();
+            #SEND EMAIL HERE - would add more security features, such as a security question.
+            send_mail(
+                subject='Password reset - Workout Planner',
+                message=f'Reset password here: http://localhost:3000/resetPassword/{request.data["username"]}?uuid={id}',
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[user.email],
+                fail_silently=False
+            )
+            
+            return Response({"type":"success"})
+        else:
+            raise MissingDataSentException();
+        
+class UUID(APIView):
+    def post(self, request):#receives username, returns uuid stored in DB if timestamp is within 2 hours.
+        if "username" in request.data:
+            user = User.objects.get(username=request.data["username"])
+            if(user.uuid != ""):
+                print("UUID: "+user.uuid)
+                id = uuid.UUID(str(user.uuid))
+
+                time_since_epoch = math.floor((id.time - int("0x01b21dd213814000", 16)) * 10**-7)
+                if int(time.time()) -time_since_epoch < 60 * 60 * 2: #If the uuid was created less than 2 hours ago
+                    return Response({"type":"success", "uuid":user.uuid})
+                else:
+                    raise UUIDInvalidException("Expired")
+            else:
+                raise UUIDInvalidException("Empty")
+        else:
+            raise MissingDataSentException()
+class ExchangeUUIDForJWT(APIView):# Username and UUID sent.
+    def post(self, request):
+        if "username" in request.data and "uuid" in request.data:#Data needed is present.
+            user = User.objects.get(username=request.data["username"])
+            if user.uuid == request.data["uuid"]:
+                user.uuid = ""#So that the uuid cannot be reused to get another JWT.
+                user.save()
+                encoded_jwt = create_jwt(request.data["username"])
+                print(encoded_jwt)
+                return Response({"type": "auth_token", "token": encoded_jwt})
+        else:
+            raise MissingDataSentException()
+

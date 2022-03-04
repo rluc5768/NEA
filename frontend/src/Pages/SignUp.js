@@ -36,7 +36,7 @@ export default function SignUp(props) {
         })
           .then((data) => data.json())
           .then((response) => {
-            if (response["type"] == "validation_error") {
+            if (response["type"] == "error") {
               //handle error
               ChangeInputState(Object.keys(response["errors"])); //Object.keys() returns a list of keys from the dictionary.
               setInvalidData("Invalid data entered.");

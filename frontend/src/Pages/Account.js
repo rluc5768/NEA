@@ -46,7 +46,9 @@ const HandleDeleteAccount = () => {// DELETE request to "/user"
     //setOptionClicked(true);
     navigate("/account/deleteAccount");
 }
-
+    const HandleChangePassword = () => {
+        navigate("/account/resetPassword");
+    }
     if(pageState=="loading"){
         return <h1>Loading</h1>;
     }
@@ -60,7 +62,7 @@ const HandleDeleteAccount = () => {// DELETE request to "/user"
         
         <button onClick={HandleLogout}>Logout</button>
         <button onClick={HandleDeleteAccount}>Delete Account</button>
-        <button>Change Password</button>
+        <button onClick={HandleChangePassword}>Change Password</button>
         <Outlet/>
     </>
     );

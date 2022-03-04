@@ -19,6 +19,7 @@ class User(models.Model):
     stravaRefreshToken = models.CharField(default='', max_length=40)
     stravaAccessTokenExpiresAt = models.IntegerField(null=True)
     verifiedViaEmail = models.BooleanField(default=False)
+    uuid = models.CharField(default="", max_length=36)
 
     def __str__(self):
         '''String represents the model object'''
