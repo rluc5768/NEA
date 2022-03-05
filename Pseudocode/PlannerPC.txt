@@ -1,0 +1,8 @@
+state is initialised for all days of the week.
+
+On page load, call  GET "/workout_plan" (if no workout_plan is specified in header, returns active plan).
+THEN, 
+iterate through the returned dicts and set each state object to what is in the response.
+If all objects are undefined/null, render a no workout active.
+Otherwise,
+    Render the not null 'cards'/state for the workout.

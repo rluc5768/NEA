@@ -8,5 +8,8 @@ urlpatterns = [
     path('activity/', ActivityView.as_view(), name='activity'),
     path('uuidAndEmail/', GenerateUUIDAndSendMail.as_view(), name="uuidAndEmail"),
     path('uuid/', UUID.as_view(), name="uuid"),
-    path("exchangeUUID/", ExchangeUUIDForJWT.as_view(), name="exchangeForJWT")
+    path("exchangeUUID/", ExchangeUUIDForJWT.as_view(), name="exchangeForJWT"),
+    path("personal_bests/", PersonalBestsView.as_view(), name="personal_best"),
+
+    path('workout_plan', WorkoutPlanView.as_view(), name='workout_plan')
 ]
