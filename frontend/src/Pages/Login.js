@@ -32,24 +32,45 @@ function Login({ setUserLoggedIn }) {
   };
   return (
     <>
-      <h1>Please login</h1>
-      <form onSubmit={HandleSubmit}>
-        <label>
-          <p>Username</p>
-          <input type="text" onChange={(e) => setUsername(e.target.value)} />
-        </label>
-        <label>
-          <p>Password</p>
-          <input
-            type="password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
-        <div>
-          <button type="submit">Submit</button>
-        </div>
-      </form>
-      <p><Link to="/sign_up">Or sign up here.</Link></p>
+      <h1 className="text-center">Please login</h1>
+      <div className="container">
+        <form onSubmit={HandleSubmit} className="text-center">
+          <div className="row">
+            <label className="form-label ">
+              <p>Username</p>
+            </label>
+            <div className="col-4">
+              <input
+                type="text"
+                onChange={(e) => setUsername(e.target.value)}
+                className="form-control"
+              />
+            </div>
+            <label>
+              <p>Password</p>
+            </label>
+            <div className="col-4">
+              <input
+                type="password"
+                onChange={(e) => setPassword(e.target.value)}
+                className="form-control"
+              />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col">
+              <input
+                type="submit"
+                value="Submit"
+                className="btn btn-outline-success col-sm-6 center"
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+      <p className="text-center">
+        <Link to="/sign_up">Or sign up here.</Link>
+      </p>
     </>
   );
 }

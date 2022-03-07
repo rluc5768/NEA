@@ -23,10 +23,23 @@ export async function APIPost(base_url, endpoint, body, tokenNeeded) {
 export async function APIGet(base_url, endpoint, tokenNeeded) {
   //params passed in url
   let header = setHeader(base_url, tokenNeeded);
-  console.log(header);
-  console.log(endpoint);
   return fetch(`${base_url}${endpoint}`, {
     method: "GET",
     headers: header,
-  }).then((data) => data.json());
+  })
+    .then((response) => {
+      //https://stackoverflow.com/questions/49902417/how-to-catch-401-error-using-fetch-method-of-javascript
+      console.log(response.status);
+      if (response.status !== 200) {
+        throw new Error(response.status);
+      } else {
+        return response.json();
+      }
+    })
+    .catch((error) => {
+      if (error.message == 401 && base_url.includes("localhost")) {
+        //Log out of the website (set logged out to true and remove JWT from session storage.)
+        console.log(error);
+      }
+    });
 }

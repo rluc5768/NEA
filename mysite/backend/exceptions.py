@@ -44,3 +44,9 @@ class FieldCannotBeModifiedException(Exception):
 
 class ParamsNotFoundException():
     pass
+
+
+class NoActiveWorkoutException(Exception):
+    def __init__(self):
+        self.code = "NoActiveWorkout"
+        self.message = "No active workout is selected."

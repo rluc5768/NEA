@@ -111,19 +111,16 @@ class Activity(models.Model):
         return self.username.username
 
 
-class WorkoutPlan(models.Model):
+class WorkoutPlan(models.Model):  # Workout_plan_id == username + plan_name
     workout_plan_id = models.CharField(primary_key=True, max_length=80)
     days_of_the_week = models.CharField(max_length=7)
     username = models.ForeignKey(User, on_delete=models.CASCADE)
     workout_plan_name = models.CharField(null=False, max_length=30)
-    workout_streak = models.IntegerField()
 
 
-class Workout(models.Model):
+class Workout(models.Model):  # WorkoutID = workout_plan + integer
     workout_id = models.CharField(primary_key=True, max_length=100)
     workout_plan = models.ForeignKey(WorkoutPlan, on_delete=models.CASCADE)
-    workout_name = models.CharField(null=False, max_length=30)
-    workout_date = models.DateTimeField(null=False)
 
 
 class Exercise(models.Model):

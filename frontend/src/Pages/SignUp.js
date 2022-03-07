@@ -40,14 +40,15 @@ export default function SignUp(props) {
               //handle error
               ChangeInputState(Object.keys(response["errors"])); //Object.keys() returns a list of keys from the dictionary.
               setInvalidData("Invalid data entered.");
-              
-
             } else {
               //save token in session storage and redirect to /"home"
               setInvalidData("");
               console.log(response);
-              sessionStorage.setItem("token", JSON.stringify(response["token"]));
-              props.LogUserInOrOut(true);//combine LogUserInOrOut to store JWT in session storage.
+              sessionStorage.setItem(
+                "token",
+                JSON.stringify(response["token"])
+              );
+              props.LogUserInOrOut(true); //combine LogUserInOrOut to store JWT in session storage.
               navigate("/home");
             }
           });
@@ -95,7 +96,7 @@ export default function SignUp(props) {
     <>
       <h1>{invalidData}</h1>
       <div className="container">
-        <form id="signUpForm" onSubmit={e=>HandleSubmit(e)} >
+        <form id="signUpForm" onSubmit={(e) => HandleSubmit(e)}>
           <div className="row">
             <label htmlFor="firstNameInput" className="form-label col-sm-2">
               First Name
@@ -186,7 +187,9 @@ export default function SignUp(props) {
                 id="passwordInput"
                 onChange={(e) => {
                   VI.current.password = e.target.value;
-                  setPasswordValid(VI.current.validatePassword());
+                  setPasswordValid(
+                    ValidateInputs.validatePassword(VI.current.password)
+                  );
                 }}
               />
             </div>

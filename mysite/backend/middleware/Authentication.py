@@ -81,5 +81,7 @@ class Auth:
                 return JsonResponse({"type": "error", "code": exception.code, "message": exception.message})
             case "MultiValueDictKeyError":
                 return JsonResponse({"type": "error", "code": "MissingData"})
+            case "NoActiveWorkoutException":
+                return JsonResponse({"type": "error", "code": exception.code, "message": exception.message})
             case _:
                 JsonResponse({"type": "error", "detail": str(exception)})

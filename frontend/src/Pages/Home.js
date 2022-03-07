@@ -2,7 +2,7 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Map, ActivityList, LoadAndSort } from "../Components/ComponentImports";
 import "./Home.css";
 import { useEffect, useRef, useState } from "react";
-import { StravaOptionPopup } from "./PageImports";
+import { APIGet } from "../External/ApiHelper";
 function getToken() {
   //gets the value of token from session storage.
   try {
@@ -14,10 +14,10 @@ function getToken() {
 
 function Home() {
   //if there is a validation_error then log the user out.
-  const LoadedActivitiesFromDB = useRef(false);
+
   const [radioButtonChecked, setRadioButtonChecked] = useState("before");
   const [dateChosen, setDateChosen] = useState();
-  const [activities, setActivities] = useState({});
+  const [activities, setActivities] = useState();
   const search = useLocation().search;
   console.log(search);
   console.log(new URLSearchParams(search).get("code"));
@@ -25,32 +25,25 @@ function Home() {
   //get all activites from database (will happen on page load)
   useEffect(() => {
     refreshActivities();
-  });
+  }, []);
   const refreshActivities = function () {
     console.log("loaded");
-    fetch("http://localhost:8000/api/v1/activity/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${getToken()}`,
-      },
-    })
-      .then((data) => data.json())
-      .then((res) => {
-        console.log(res);
+    APIGet("http://localhost:8000/api/v1/", "activity/", true).then((res) => {
+      console.log(res);
 
-        if (res["type"] == "success") {
-          console.log(Object.keys(res["activities"]).length);
-          if (Object.keys(res["activities"]).length > 0) {
-            //do something with the activities (add to activity list)
-            console.log("SAVED!!!");
+      if (res["type"] == "success") {
+        console.log(Object.keys(res["activities"]).length);
+        if (Object.keys(res["activities"]).length > 0) {
+          //do something with the activities (add to activity list)
+          console.log("SAVED!!!");
 
-            setActivities(res["activites"]);
-          }
-        } else {
-          //handle error.
+          setActivities(res["activites"]);
+          console.log(activities);
         }
-      });
+      } else {
+        //handle error.
+      }
+    });
   };
 
   let scope = new URLSearchParams(search).get("scope");

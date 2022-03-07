@@ -1,9 +1,5 @@
-from email.policy import default
-from http.client import HTTPException
 import math
-from textwrap import indent
 from django.conf import settings
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import jwt
@@ -19,7 +15,6 @@ from .models import *
 from .exceptions import *
 import uuid
 from django.core.mail import send_mail
-from datetime import datetime, timedelta
 # Create your views here.
 
 
@@ -276,9 +271,64 @@ class WorkoutPlanView(APIView):
     # Params assigned to request in authentication middleware.
     def get(self, request):
         # return active workout plan, if that is "" then return "NoWorkoutplanActive".
-        if request.workout_plan == "":
+        if not hasattr(request, 'workout_plan'):
             user = User.objects.get(username=request.username)
             request.workout_plan = user.currentWorkoutPlanActive
+            if(request.workout_plan == ""):
+                raise NoActiveWorkoutException()
+        # Get the active workout plan and return it in the correct format
+        workouts = Workout.objects.filter(
+            workout_plan=f"{request.username}{request.workout_plan}")
+        response_dict = {
+            "name": request.workout_plan,
+            "daysOfTheWeek": workouts[0].workout_plan.days_of_the_week,
+            "plan": {}
+        }
+
+        for workout in workouts:
+            exercises = ExerciseInWorkout.objects.filter(
+                workout_id=workout.workout_id)
+            day = workout.workout_id
+            day = day.replace(
+                f"{request.username}${request.workout_plan}", "")
             print(request.workout_plan)
-        print(f"Plan: {request.workout_plan}")
-        return Response(request.workout_plan)
+            print("day"+day)
+            exercise_on_day = []
+            for exercise in exercises:  # Append details to dict.
+                exercise_on_day.append(
+                    {"name": exercise.exercise_name.exercise_name, "sets": exercise.sets, "reps": exercise.reps, "weight": exercise.weight})
+
+            response_dict["plan"][day] = exercise_on_day
+            # Gets the day of the week.
+
+        return Response(response_dict)
+
+    def post(self, request):
+        print(request.data)
+        user = User.objects.get(username=request.username)
+        if WorkoutPlan.objects.filter(workout_plan_id=f"{request.username}{request.data['name']}").exists():
+            return Response("Workout_plan already exists")
+        plan = WorkoutPlan(workout_plan_id=f"{request.username}{request.data['name']}",
+                           days_of_the_week=request.data["daysOfTheWeek"], workout_plan_name=request.data["name"], username=user)
+        plan.save()
+        for day in request.data["plan"].keys():
+            workout = Workout(workout_id=f"{plan.workout_plan_id}{day}",
+                              workout_plan=plan)
+            workout.save()
+            for exercise in request.data["plan"][day]:
+                ex = Exercise.objects.get(exercise_name=exercise['name'])
+                if not ExerciseInWorkout.objects.filter(exercise_name=ex, workout_id=workout):
+                    ExerciseInWorkout(exercise_name=ex, workout_id=workout,
+                                      sets=exercise['sets'], reps=exercise['reps'], weight=exercise['weight']).save()
+        user.currentWorkoutPlanActive = request.data["name"]
+        user.save()
+        return Response("success ")
+
+
+class ExerciseView(APIView):
+    def get(self, request):
+        exercises = Exercise.objects.all()
+        res = {}
+        for exercise in exercises:
+            res[exercise.exercise_name] = exercise.brief_description
+        return Response(res)

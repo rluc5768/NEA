@@ -11,5 +11,6 @@ urlpatterns = [
     path("exchangeUUID/", ExchangeUUIDForJWT.as_view(), name="exchangeForJWT"),
     path("personal_bests/", PersonalBestsView.as_view(), name="personal_best"),
 
-    path('workout_plan', WorkoutPlanView.as_view(), name='workout_plan')
+    path('workout_plan', WorkoutPlanView.as_view(), name='workout_plan'),
+    path('exercises', ExerciseView.as_view(), name="exercises")
 ]
